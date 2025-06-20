@@ -33,9 +33,9 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 class ArticleGenerator:
-    def __init__(self, user_data_dir, profile_directory):
-        self.user_data_dir = user_data_dir
-        self.profile_directory = profile_directory
+    def __init__(self):
+        self.user_data_dir: str = os.getenv('USER_DATA_DIR')
+        self.profile_directory: str = os.getenv('PROFILE_DIRECTORY')
         self.driver = None
         self.OPEN_API_KEY: str = os.getenv('OPEN_API_KEY')
 
@@ -253,13 +253,10 @@ class ArticleGenerator:
             print(f"保存文章時發生錯誤: {str(e)}")
             return False
 
-@app.get("/generate_article", description="透過 Selenium 自動生成會議摘要文章，輸入文字後會自動操作瀏覽器並回傳結果。")
+@app.get("/generate_article", description="輸入會議記錄，透過 Selenium 自動生成會議摘要文章，輸入文字後會自動操作瀏覽器並回傳結果。")
 async def generate_article(text: str):
-    user_data_dir = '/Users/steve.wang/Library/Application\\ Support/Google/Chrome'
-    profile_directory = 'Profile 1' # Profile 1, Profile 2, Default, etc.
-
     # 範例用法
-    article_generator = ArticleGenerator(user_data_dir, profile_directory)
+    article_generator = ArticleGenerator()
     is_success = article_generator.generate_article(text)
     if not is_success:
         return {"status": "failed", "message": "文章生成失敗"}
