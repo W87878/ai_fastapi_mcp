@@ -12,7 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # 初始化
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4o")
+MAX_INPUT_LENGTH = os.getenv("MAX_INPUT_LENGTH", 8000)
+llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4o-mini")
 
 app = FastAPI()
 agent = None
@@ -70,13 +71,18 @@ def print_optimized_result(agent_response):
 @app.post("/ask")
 async def ask(query: Query):
     try:
-        agent_response = await agent.ainvoke({"messages": query.question})
-        final_answer = print_optimized_result(agent_response)
+        max_input_length = MAX_INPUT_LENGTH
+        response = await agent.ainvoke({
+            "messages": query.question[:max_input_length]
+        })
+        import pprint
+        pprint.pprint(response["messages"])
+        final_answer = print_optimized_result(response)
         return {"response": final_answer}
-
     except Exception as e:
         return {"error": str(e)}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run('api_server:app', host="0.0.0.0", port=8001)

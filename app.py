@@ -22,7 +22,7 @@ app = FastAPI()
 # MCP Server
 mcp = FastApiMCP(app, 
                  name='ToolServer',
-                 description='MCP tool server'
+                 description='MCP tool server for AI FastAPI MCP',
                  )
 
    
@@ -78,13 +78,13 @@ class ArticleGenerator:
                     raise e
                 time.sleep(2)  # 等待 2 秒後重試
 
-    def generate_article(self, text):
+    def summarize_meeting(self, text):
         for attempt in range(3):
             try:
                 driver = self.get_webdriver()
                 url = "https://notebooklm.google.com/"
                 driver.get(url)
-                time.sleep(3)
+                time.sleep(15)
                 # 新建專案 
                 new_created = driver.find_element(By.XPATH, '/html/body/labs-tailwind-root/div/welcome-page/div/div[2]/div[1]/div/button/span[2]')
                 while not new_created:
@@ -229,7 +229,7 @@ class ArticleGenerator:
         is_success = self.save_article_as_md(result, filename=dir + '/summary.md')
         return is_success
 
-    def save_article_as_md(self, content, filename="/Users/steve.wang/Downloads/AI_FastAPI_MCP/transcripts/summary.md"):
+    def save_article_as_md(self, content, filename=os.getenv('FILEMDPATH')):
         # 打開或創建一個 .md 文件
         try:
             with open(filename, 'w+', encoding='utf-8-sig') as file:
@@ -241,7 +241,7 @@ class ArticleGenerator:
             print(f"保存文章時發生錯誤: {str(e)}")
             return False
 
-    def save_article_as_txt(self, content, filename="/Users/steve.wang/Downloads/AI_FastAPI_MCP/transcripts/summary.txt"):
+    def save_article_as_txt(self, content, filename=os.getenv('FILETXTPATH')):
         # 打開或創建一個 .txt 文件
         try:
             with open(filename, 'w+', encoding='utf-8-sig') as file:
@@ -253,13 +253,25 @@ class ArticleGenerator:
             print(f"保存文章時發生錯誤: {str(e)}")
             return False
 
-@app.get("/generate_article", description="輸入會議記錄，透過 Selenium 自動生成會議摘要文章，輸入文字後會自動操作瀏覽器並回傳結果。")
-async def generate_article(text: str):
+@app.get("/summarize_meeting", description="輸入會議記錄，透過 Selenium 自動生成會議摘要文章，輸入文字後會自動操作瀏覽器並回傳結果。")
+async def summarize_meeting(text: str) -> dict:
+    """
+    文章摘要生成工具
+    
+    透過 Selenium 自動操作瀏覽器打開 Google Notebook LM，生成精煉的技術會議摘要。
+    支援多次重試與錯誤處理，輸入為純文字。
+    
+    Parameters:
+    - text: 要生成文章的文字內容
+    
+    Returns:
+    - dict 格式的結果，包含生成狀態與訊息
+    """
     # 範例用法
     article_generator = ArticleGenerator()
-    is_success = article_generator.generate_article(text)
+    is_success = article_generator.summarize_meeting(text)
     if not is_success:
-        return {"status": "failed", "message": "文章生成失敗"}
+        return {"status": "failed", "message": "摘要生成失敗"}
     is_success = article_generator.convert_to_markdown_from_openai()
     return {"status": "success" if is_success else "failed"}
 
@@ -271,6 +283,6 @@ mcp.setup_server()
 # 假設生成的文章內容如下（這會是你的生成內容）
 # 測試區域（僅在此模組直接執行時執行）
 if __name__ == "__main__":
-    uvicorn.run('app:app', host="0.0.0.0", port=8000, reload=True, log_level="info")
+    uvicorn.run('app:app', host="0.0.0.0", port=8000, log_level="info")
 
 

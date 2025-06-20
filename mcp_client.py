@@ -11,7 +11,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
-llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4o")
+llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4o-mini")
 
 
 def print_optimized_result(agent_response):

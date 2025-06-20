@@ -79,6 +79,9 @@ open frontend.html
 OPENAI_API_KEY=your_key_here
 USER_DATA_DIR=your_data_dir_here
 PROFILE_DIRECTORY=your_profile_directory_here
+MAX_INPUT_LENGTH=8000
+FILEMDPATH=your_file_md_path_here
+FILETXTPATH=your_file_txt_path_here
 ```
 
 或直接在 CLI 中執行：
@@ -86,8 +89,11 @@ PROFILE_DIRECTORY=your_profile_directory_here
 export OPENAI_API_KEY=your_key_here
 export USER_DATA_DIR=your_data_dir_here
 export PROFILE_DIRECTORY=your_profile_directory_here
+export MAX_INPUT_LENGTH=your_max_length_here
+export FILEMDPATH=your_file_md_path_here
+export FILETXTPATH=your_file_txt_path_here
 ```
-
+FILEMDPATH 與 FILETXTPATH 是用來儲存生成的 Markdown 摘要與逐字稿的路徑。
 ---
 
 ## 📎 TODO / 延伸規劃
