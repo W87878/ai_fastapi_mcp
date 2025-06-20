@@ -77,11 +77,15 @@ open frontend.html
 
 ```env
 OPENAI_API_KEY=your_key_here
+USER_DATA_DIR=your_data_dir_here
+PROFILE_DIRECTORY=your_profile_directory_here
 ```
 
 或直接在 CLI 中執行：
 ```bash
 export OPENAI_API_KEY=your_key_here
+export USER_DATA_DIR=your_data_dir_here
+export PROFILE_DIRECTORY=your_profile_directory_here
 ```
 
 ---
